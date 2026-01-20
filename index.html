@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; max-width: 600px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Live Status</h2>
+    <p id="time"></p>
+    <table id="table"></table>
+
+    <script>
+        fetch('./dashboard_data.json')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('time').innerText = "Last Updated: " + new Date().toLocaleTimeString();
+                
+                let html = "<tr>";
+                Object.keys(data[0]).forEach(k => html += `<th>${k}</th>`);
+                html += "</tr>";
+                
+                data.forEach(row => {
+                    html += "<tr>";
+                    Object.values(row).forEach(val => html += `<td>${val}</td>`);
+                    html += "</tr>";
+                });
+                document.getElementById('table').innerHTML = html;
+            });
+    </script>
+</body>
+</html>
