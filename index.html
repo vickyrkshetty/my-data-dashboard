@@ -15,12 +15,24 @@
     <p id="time"></p>
     <table id="table"></table>
 
-    <script>
-        fetch('./dashboard_data.json')
-            .then(res => res.json())
-            .then(data => {
+<script>
+        // 1. The URL to your data
+        const DATA_URL = './dashboard_data.json';
+
+        async function updateDashboard() {
+            try {
+                // TRICK 1: Cache Busting
+                // We add "?t=" + timestamp to the URL. This forces the browser
+                // to think it's a "new" file every time, bypassing the cache.
+                const uniqueUrl = DATA_URL + '?t=' + new Date().getTime();
+                
+                const response = await fetch(uniqueUrl);
+                const data = await response.json();
+                
+                // Update the time display
                 document.getElementById('time').innerText = "Last Updated: " + new Date().toLocaleTimeString();
                 
+                // Build the table
                 let html = "<tr>";
                 Object.keys(data[0]).forEach(k => html += `<th>${k}</th>`);
                 html += "</tr>";
@@ -31,7 +43,20 @@
                     html += "</tr>";
                 });
                 document.getElementById('table').innerHTML = html;
-            });
+                
+                console.log("Data refreshed successfully.");
+
+            } catch (error) {
+                console.error("Error loading data:", error);
+            }
+        }
+
+        // Run immediately when page loads
+        updateDashboard();
+
+        // TRICK 2: Auto-Polling
+        // Run the function again every 30 seconds (30000 milliseconds)
+        setInterval(updateDashboard, 30000);
     </script>
 </body>
 =======
